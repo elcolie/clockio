@@ -15,17 +15,19 @@ from clockio.memories.models import Memory, MemoryClockOut
 User = get_user_model()
 
 
-def today_start_stop(datetime_now: datetime = datetime.now()) -> typ.Tuple[datetime, datetime]:
+def today_start_stop() -> typ.Tuple[datetime, datetime]:
     """Return tuple of start, end of today"""
-    today = datetime_now.date()
+    today = datetime.now().date()
     tomorrow = today + timedelta(days=1)
     today_start = datetime.combine(today, time())
     today_end = datetime.combine(tomorrow, time())
     return today_start, today_end
 
 
-def work_hour_given_date(user: User, input_date: datetime) -> int:
-    today_start, today_end = today_start_stop(input_date)
+def work_hour_given_date(user: User, today: datetime) -> int:
+    tomorrow = today + timedelta(days=1)
+    today_start = datetime.combine(today, time())
+    today_end = datetime.combine(tomorrow, time())
     clock_in_instance: Memory = Memory.objects.filter(
         user=user, clock_in__lte=today_end, clock_in__gte=today_start
     ).last()
